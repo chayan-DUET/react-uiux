@@ -7,9 +7,12 @@ const ProductsAdd = (props) =>{
   let history = useHistory();
     const [state,setState] = useState({
       name: '',
-      location: ''
+      location: '',
+      image:''
   });
-  
+  const changeHandler = (event) => {
+		setState({...state,[event.target.name]: event.target.files[0]});
+	};
 
 
 const handleInput = (e) => {
@@ -19,7 +22,13 @@ const handleInput = (e) => {
 const savePost = async (e) => {
   e.preventDefault();
 
-  const res = await axios.post("http://localhost:8000/api/create", state);
+  const formData = new FormData()
+
+  formData.append('name', state.name)
+  formData.append('location', state.location)
+  formData.append('image', state.image,state.image.name)
+  console.log(formData);
+  const res = await axios.post("http://localhost:8000/api/create", formData);
   if(res.data.status === 200){
       history.push("/product-ui/product-list");
   }
@@ -47,6 +56,15 @@ const savePost = async (e) => {
                     <input type="text" name="location" className="form-control highlight" 
                                 value={state.location} onChange={handleInput}
                                 placeholder="Enter the Location" required/>
+                    </div>
+                  </Form.Group>
+
+                  <Form.Group className="row">
+                    <label htmlFor="file" className="col-sm-3 col-form-label">file</label>
+                    <div className="col-sm-9">
+                    <input type="file" name="image" className="form-control highlight" 
+                                value={state.file} onChange={changeHandler}
+                                placeholder="Enter the file" required/>
                     </div>
                   </Form.Group>
                  

@@ -1,11 +1,13 @@
 import React, { Component,  useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Button } from 'react-bootstrap';
+import axios from "axios";
 
 class Products extends Component {
   state = {
     books: []
 }
-
-componentDidMount() {
+bringData (){
   fetch('http://localhost:8000/api/view')
   .then((response) => response.json())
   .then(data => {
@@ -14,6 +16,14 @@ componentDidMount() {
       {return state.books = data.response })
   });
 }
+componentDidMount() {
+  this.bringData();
+}
+ deleteProduct = async (id) => {
+  const res = await axios.delete(`http://localhost:8000/api/delete/${id}`);
+  alert("delete")
+  this.bringData();
+ }
   render () {
     return (
       <div>
@@ -44,12 +54,25 @@ componentDidMount() {
                       <tr>
                         <th>Name</th>
                         <th>location</th>
+                        <th>Image</th>
+                        <th>Action</th>
                       </tr>
                     </thead>
                     <tbody>
                       {this.state.books.map(book => (<tr key = {book.id}>
                       <td>{book.name}</td>
                       <td>{book.location}</td>
+                      <td>
+                          <img width="50px" src={`http://localhost:8000/images/${book.image}`} />
+                      </td>
+                      <td>
+                        <Link to={`/product/edit/${book.id}`} className='btn btn-success me-2'>
+                            Edit
+                        </Link>
+                        <Button variant="danger" onClick={()=> this.deleteProduct(book.id)}>
+                            Delete
+                        </Button>
+                    </td>
                   </tr>))}
                     </tbody>
                   </table>
